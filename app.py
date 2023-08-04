@@ -71,11 +71,14 @@ with mlflow.start_run():
     mlflow.log_metric("r2",r2)
     mlflow.log_metric("mae",mae)
     
-    predictions = lr.predict(train_x)
-    signature = infer_signature(train_x,predictions)
+    # predictions = lr.predict(train_x)
+    # signature = infer_signature(train_x,predictions)
+    
+    ## For Remote server only(DAGShub)
+    remote_server_uri = "https://dagshub.com/pranaykumar247/mlflowExperiment.mlflow"
+    mlflow.set_tracking_uri(remote_server_uri)
     
     tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
-   
     # Model registry does not work with file store
     if tracking_url_type_store != "file":
             # Register the model
@@ -83,9 +86,9 @@ with mlflow.start_run():
             # please refer to the doc for more information:
             # https://mlflow.org/docs/latest/model-registry.html#api-workflow
         mlflow.sklearn.log_model(
-            lr, "model", registered_model_name="ElasticnetWineModel", signature=signature
+            lr, "model", registered_model_name="ElasticnetWineModel"
         )
     else:
-         mlflow.sklearn.log_model(lr, "model", signature=signature)
+         mlflow.sklearn.log_model(lr, "model")
     
         
